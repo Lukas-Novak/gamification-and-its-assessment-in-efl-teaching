@@ -18,34 +18,45 @@ output            : papaja::apa6_pdf
 ---
 
 ```{r setup, include = FALSE}
+# load packages and set seed
+packages=c("psych","dplyr","lavaan","parameters","papaja","irr","osfr","openxlsx","mltools","irrCAC") 
+set.seed(626461321)
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "https://cran.r-project.org/")
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
+
 library("papaja")
 r_refs("r-references.bib")
 ```
 
+```{r data loading, include=FALSE}
+data <- openxlsx::read.xlsx( paste0(getwd(),"/Data/abs_scr_eval_res_JH_PM.xlsx"))
+
+# old data to check
+data.old.ratng <- openxlsx::read.xlsx( paste0(getwd(),"/Data/abs_scr_eval_res_JH_PM_old_old.xlsx"))
+```
 
 ```{r Inter-rater reliability and percent agreement}
-library(psych)
-library(dplyr)
-library(parameters)
-library(irr)
-library(checkpoint)
-library(osfr)
+# set seed in order to assure computaional reproducitiblity
 set.seed(874354)
 
-# if problems with replication of the analysis would occur, uncheck the following line: 
-#checkpoint(snapshotDate = "2020-09-18", R.version = "4.0.1")
-
-# loading of data
-excel.to.check = openxlsx::read.xlsx(choose.files())
-
 # percent ageement
-agree(excel.to.check, tolerance=0) 
+agree(data, tolerance=0) 
 
 # cohens kappa
-kappa2(ratings = excel.to.check) # cohens kappa yields contraceptive values, thus other method i.e. Matthews correlation coefficient was used for the analysis of agreement. 
+kappa2(ratings = data) # cohens kappa yields contraceptive values, thus other method i.e. Matthews correlation coefficient was used for the analysis of agreement. 
 
 # Matthews correlation coefficient (dodat zdůvodnění proč zrovna toto)
-mltools::mcc(excel.to.check$PM, excel.to.check$JH) %>% round(digits = 2) 
+mltools::mcc(data$PM, data$JH) %>% round(digits = 2) 
+
+# Gwet´s AC1
+gwen=irrCAC::gwet.ac1.raw(ratings = data)
 ```
 
 
