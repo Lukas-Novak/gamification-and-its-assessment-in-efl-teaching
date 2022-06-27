@@ -1,0 +1,62 @@
+---
+keywords          : "keywords"
+wordcount         : "X"
+
+bibliography      : ["r-references.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+
+```{r Inter-rater reliability and percent agreement}
+library(psych)
+library(dplyr)
+library(parameters)
+library(irr)
+library(checkpoint)
+library(osfr)
+set.seed(874354)
+
+# if problems with replication of the analysis would occur, uncheck the following line: 
+#checkpoint(snapshotDate = "2020-09-18", R.version = "4.0.1")
+
+# loading of data
+excel.to.check = openxlsx::read.xlsx(choose.files())
+
+# percent ageement
+agree(excel.to.check, tolerance=0) 
+
+# cohens kappa
+kappa2(ratings = excel.to.check) # cohens kappa yields contraceptive values, thus other method i.e. Matthews correlation coefficient was used for the analysis of agreement. 
+
+# Matthews correlation coefficient (dodat zdůvodnění proč zrovna toto)
+mltools::mcc(excel.to.check$PM, excel.to.check$JH) %>% round(digits = 2) 
+```
+
+
+
+\newpage
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
