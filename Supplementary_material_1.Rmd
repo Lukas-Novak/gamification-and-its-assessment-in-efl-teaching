@@ -1,0 +1,105 @@
+---
+title             : "Supplementary Material 1"
+shorttitle        : "Supplementary Material 1"
+keywords          : "keywords"
+wordcount         : "X"
+
+bibliography      : ["r-references.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# load packages and set seed
+packages=c("psych","dplyr","lavaan","parameters","papaja","irr","osfr","openxlsx","mltools","irrCAC") 
+set.seed(626461321)
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages], repos = "https://cran.r-project.org/")
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
+
+library("papaja")
+r_refs("r-references.bib")
+```
+
+# Inter-rater reliability methods
+
+  As the Cohen Kappa resulted in suspicious values during the first step of the agreement analysis, we have decided to use other inter reliability tests to examine degree of agreement. It was possible to use Matthews correlation coefficient or other methods such as the Gwet´s AC1. The later was chosen because it overcomes problems associated with the Cohen´s Kappa if the degree of agreement is in fact high [@Gwet_2008]. Moreover, the Gwet´s AC1 it also does not have an assumptions, which are sometimes difficult to fulfill e.g. independence between raters [@Gwet_2008]. The text below presents statistical calculations conducted in the present study to evaluate the degree of agreement between raters. 
+
+\newpage
+
+```{r data loading, echo=TRUE}
+data.abs.scr <- openxlsx::read.xlsx(
+  paste0(getwd(),"/Data/R_data_study_selection.xlsx"))
+data.qual.scr <- openxlsx::read.xlsx(
+  paste0(getwd(),"/Data/R_data_quality_assessment.xlsx"))
+```
+
+```{r Inter-rater reliability and percent agreement - abstract screening, echo=TRUE}
+# set seed in order to assure computaional reproducitiblity
+set.seed(874354)
+
+# percent ageement
+agree(data.abs.scr, tolerance=0) 
+
+# cohens kappa
+# psych package
+psych::cohen.kappa(data.abs.scr)
+
+# irr package
+# kappa2(ratings = data.abs.scr) # cohens kappa yields
+#contraceptive values, thus other methods 
+#such as. Matthews correlation coefficient
+#or Gwet´s AC1 migt be used for further analysis. 
+
+# Matthews correlation coefficient (dodat zdůvodnění proč zrovna toto)
+# mltools::mcc(data.abs.scr$PM, data.abs.scr$JH) %>% round(digits = 2) 
+
+# Gwet´s AC1
+gwen=irrCAC::gwet.ac1.raw(ratings = data.abs.scr)
+gwen
+```
+
+```{r Inter-rater reliability and percent agreement - quality assesment screening, echo=TRUE}
+# percent ageement
+agree(data.qual.scr, tolerance=0) # 96%
+
+# cohens kappa
+#...............
+# psych package
+psych::cohen.kappa(data.qual.scr) # 0.9
+
+# irr package
+kappa2(ratings = data.qual.scr) # 0.9
+
+# Gwet´s AC1
+gwen=irrCAC::gwet.ac1.raw(ratings = data.qual.scr) # 0.93
+gwen
+```
+
+\newpage
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
